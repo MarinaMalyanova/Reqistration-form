@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import styles from './App.module.css';
 
 const initialState = {
@@ -21,6 +21,7 @@ function App() {
 	const [errorPasswordMessage, setErrorPasswordMessage] = useState('');
 	const [errorEmailMessage, setErrorEmailMessage] = useState('');
 	const [errorRepeatPassword, setErrorRepeatPassword] = useState('');
+	const submitButtonRef = useRef(null);
 	const sendData = (data) => {
 		console.log(data);
 	};
@@ -53,12 +54,19 @@ function App() {
 			}
 			setErrorEmailMessage(errorEmailMessage);
 		}
+		if (target.name === 'repeatPassword') {
+			if (password === target.value) {
+				submitButtonRef.current.focus();
+			}
+		}
 	};
 
-	const onBlur = () => {
-		if (repeatPassword !== password) {
+	const onBlur = ({ target }) => {
+		if (target.value !== password) {
 			setErrorRepeatPassword('Пароли должны совпадать.');
-		} else setErrorRepeatPassword('');
+		} else {
+			setErrorRepeatPassword('');
+		}
 	};
 
 	return (
@@ -104,8 +112,9 @@ function App() {
 				<div className={styles.errorMessage}>{errorRepeatPassword}</div>
 				<button
 					type="submit"
-					disabled={errorPasswordMessage !== ''}
+					disabled={errorPasswordMessage !== '' || errorEmailMessage !== ''}
 					className={styles.registrationButton}
+					ref={submitButtonRef}
 				>
 					Зарегистрироваться
 				</button>
